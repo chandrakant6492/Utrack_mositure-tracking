@@ -103,7 +103,7 @@ ax[0].add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.3)
 ax[0].set_xlim(-20,60)
 ax[0].set_ylim(-40, 20)
 ax[0].scatter(np.array(Screened_data['Lon']), np.array(Screened_data['Lat']), c='black', alpha = 0.7, s = 0.5, marker = '.')
-ax[0].set_title('mm/year')
+ax[0].set_title('Backwardtracking (mm/year)')
 
 # Change name here for saving file
-total_main.to_netcdf('/home/chandra/data/Kruger/Backtracking/test_run_backtracking.nc')
+total_main.to_netcdf('/home/chandra/data/test_run_backtracking.nc')
