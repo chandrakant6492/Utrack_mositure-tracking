@@ -109,4 +109,4 @@ ax[0].scatter(np.array(Screened_data['Lon']), np.array(Screened_data['Lat']), c=
 ax[0].set_title('Forwardtracking (mm/year)')
 
 # Change name here for saving file
-total_main.to_netcdf('/home/chandra/data/Kruger/Backtracking/test_run_forwardtracking.nc')
+total_main.to_netcdf('/home/chandra/data/test_run_forwardtracking.nc')
