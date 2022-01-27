@@ -28,7 +28,7 @@ Evap_agg
 """
 
 """
-2. Load your dataset for backtrcking here
+2. Load your dataset for backtracking here
 """
 Data = xr.open_dataset('/home/chandra/data/Kruger/Backtracking/africa_LU-2.nc').get('Africa prop. gridcell') 
 
@@ -71,6 +71,7 @@ def MR_yearly_source(source_lat,source_lon):
     main = 0
     month_name = ['01','02','03','04','05','06','07','08','09','10','11','12']
     for i in (range(12)):
+        # Read the Utrack moisture recycling data here
         MR = xr.open_dataset('/home/chandra/data/Paper4_Self-influencing_feedback/utrack_climatology/utrack_climatology_0.5_'+
                                          str(month_name[i])+'.nc').moisture_flow
         source = MR.sel(sourcelat = source_lat-0.25, sourcelon= source_lon-0.25)
