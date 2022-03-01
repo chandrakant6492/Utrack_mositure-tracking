@@ -18,7 +18,7 @@ Evap_agg = xr.open_mfdataset('/home/chandra/data/Paper4_Self-influencing_feedbac
 
 # Convert to multi-year mean
 Evap_agg = Evap_agg.groupby('time.month').mean(dim = 'time')
-Evap_agg = (Evap_agg.where(Evap_agg > 0))
+Evap_agg = (Evap_agg.where(Evap_agg >= 0))
 
 print('Your Evaporation data:')
 print('Latitude = [', Evap_agg.lat[0].values, '→', Evap_agg.lat[-1].values, ']')
