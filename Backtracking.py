@@ -32,7 +32,7 @@ Note: Longitude should be from 0 to 360 degrees
 Screened_data = pd.DataFrame({'Lat': [-18.5, -10.0],'Lon': [310,295]})
 
 """
-3. Funtion for backtracking (both monthly and annual 
+3. Funtion for backtracking (both monthly and annual) 
 """
 def MR_yearly_sink(sink_lat,sink_lon):
     global Evap_footprint_annual, Evap_footprint_monthly
@@ -89,4 +89,4 @@ ax[0].add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.3)
 ax[0].set_xlim(-100,10)
 ax[0].set_ylim(-60, 30)
 ax[0].scatter(np.array(Screened_data['Lon']), np.array(Screened_data['Lat']), c='red', alpha = 0.7, s = 25, marker = '.')
-ax[0].set_title('mm/year')
+ax[0].set_title('Backtracking: mm/year')
