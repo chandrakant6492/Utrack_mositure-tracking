@@ -9,7 +9,7 @@ E_hourly_to_year = ((E_hourly_to_monthly.sum('time')))
 E_hourly_to_monthly.to_netcdf('/home/chandra/data/Kruger/era5/evap_ERA5_reanalysis_hourly_2007-resampled_monthly.nc')
 
 """
-ERA5 monthly averaged reanalysis data is at montly timescale; ; represnted in 'm of water equivalent per day'
+ERA5 monthly averaged reanalysis data is at montly timescale; ; represented in 'm of water equivalent per day'
 (m of water eq/day)
 """
 E_avgmonthly = (xr.open_dataset('/home/chandra/data/Kruger/era5/evap_ERA5_monthly_averaged_reanalysis_2007.nc').e[:,::-1,:])
