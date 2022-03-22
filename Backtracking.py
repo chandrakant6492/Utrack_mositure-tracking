@@ -9,20 +9,24 @@ import pandas as pd
 """
 1. Load your evaporation dataset here
 """
-
 print('To run the model, your data format should be:')
 print('Latitude = [ 90 → -90 ]')
 print('Longitude = [ 0 → 360 ]')
 print(' ')
-Evap_agg = xr.open_mfdataset('/home/chandra/data/Paper4_Self-influencing_feedback/ERA5_monthly/era5_evaporation_monthly_*_p25.nc').__xarray_dataarray_variable__; # 0.5 degree resolution
-
+Evap_agg = xr.open_mfdataset('/home/chandra/data/Kruger/era5/evap_ERA5_monthly_averaged_reanalysis_resampled_monthly_mm_per_month_0.5degree.nc').e[:,::-1].sel(time = slice('2000','2005'))
 # Convert to multi-year mean
 Evap_agg = Evap_agg.groupby('time.month').mean(dim = 'time')
-Evap_agg = (Evap_agg.where(Evap_agg >= 0))
+Evap_agg = (Evap_agg.where(Evap_agg > 0))
 
 print('Your Evaporation data:')
 print('Latitude = [', Evap_agg.lat[0].values, '→', Evap_agg.lat[-1].values, ']')
 print('Longitude = [', Evap_agg.lon[0].values, '→', Evap_agg.lon[-1].values, ']')
+
+lat = Evap_agg.lat.values
+lon = Evap_agg.lon.values
+month = Evap_agg.month.values
+
+Evap_agg = np.nan_to_num(Evap_agg.values)
 
 
 """
@@ -31,16 +35,16 @@ Note: Longitude should be from 0 to 360 degrees
 """
 Screened_data = pd.DataFrame({'Lat': [-18.5, -10.0],'Lon': [310,295]})
 
+
 """
 3. Funtion for backtracking (both monthly and annual) 
 """
 def MR_yearly_sink(sink_lat,sink_lon):
-    global Evap_footprint_annual, Evap_footprint_monthly
+    global Evap_footprint_annual_sum, Evap_footprint_monthly_sum
     Evap_footprint_monthly = np.zeros(shape=(12,360,720))
-    Evap_footprint_monthly[:] = np.nan
+    #Evap_footprint_monthly[:] = np.nan
     Evap_footprint_annual = np.zeros(shape=(360,720))
-    Evap_footprint_annual[:] = np.nan
-
+    #Evap_footprint_annual[:] = np.nan
     month_name = ['01','02','03','04','05','06','07','08','09','10','11','12']
     for i in (range(12)):
         MR = xr.open_dataset('/home/chandra/data/Paper4_Self-influencing_feedback/utrack_climatology/utrack_climatology_0.5_'+
@@ -48,11 +52,14 @@ def MR_yearly_sink(sink_lat,sink_lon):
         source = MR.sel(targetlat = sink_lat, targetlon= sink_lon, method = 'nearest')
         source = source.where(source != 255)
         source.values = np.exp(source.values*-0.1)
-        Evap_footprint_monthly[i] = (Evap_agg[i].values*source.values)
-    Evap_footprint_annual = np.nansum(Evap_footprint_monthly,axis = 0)
+        source = np.nan_to_num(source.values)
+        Evap_footprint_monthly[i] = (Evap_agg[i]*source)
+    Evap_footprint_annual = np.nansum(np.nan_to_num(Evap_footprint_monthly),axis = 0)
+    Evap_footprint_annual_sum += np.nan_to_num(Evap_footprint_annual)
+    Evap_footprint_monthly_sum += np.nan_to_num(Evap_footprint_monthly)
     MR.close()
-    source.close()
-    
+
+
 """
 4. Running the backtracking code for the screened dataframe 
 """
@@ -62,21 +69,25 @@ Evap_footprint_monthly_sum = 0
 for i in tqdm(range(Screened_data.shape[0])):
     sink_lat, sink_lon = np.array(Screened_data[['Lat','Lon']])[i]
     MR_yearly_sink(sink_lat,sink_lon)
-    Evap_footprint_annual_sum += Evap_footprint_annual
-    Evap_footprint_monthly_sum += Evap_footprint_monthly
-    
+
+print('Both the values below should be same-')
+print('Annual footprint: ', Evap_footprint_annual_sum.sum())
+print('Monthly footprint (sum): ', Evap_footprint_monthly_sum.sum())
+
+
 """
 5. Saving the dataset as NetCDF 
 """
-Evap_footprint_annual_sum = xr.DataArray(Evap_footprint_annual_sum, coords=[Evap_agg.lat.values, Evap_agg.lon.values],
+Evap_footprint_annual_sum = xr.DataArray(Evap_footprint_annual_sum, coords=[lat, lon],
              dims=['lat', 'lon'], name = 'Evap_footprint', attrs=dict(description="Evaporation Footprint", units="mm/year"))
 
-Evap_footprint_monthly_sum = xr.DataArray(Evap_footprint_monthly_sum, coords=[Evap_agg.month.values, Evap_agg.lat.values, Evap_agg.lon.values],
+Evap_footprint_monthly_sum = xr.DataArray(Evap_footprint_monthly_sum, coords=[month, lat, lon],
              dims=['month', 'lat', 'lon'], name = 'Evap_footprint', attrs=dict(description="Evaporation Footprint", units="mm/month"))
 
 # Change name here for saving file
 Evap_footprint_annual_sum.to_netcdf('/home/chandra/data/Kruger/Backtracking/Backtracking_Evap_footprint_annual_sum.nc')
 Evap_footprint_monthly_sum.to_netcdf('/home/chandra/data/Kruger/Backtracking/Backtracking_Evap_footprint_monthly_sum.nc')
+
 
 """
 6. Plotting the results
