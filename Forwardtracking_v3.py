@@ -21,7 +21,7 @@ print(' ')
 lats=np.arange(90,-90,-0.5)
 lons=np.arange(0,360,0.5)
 
-Evap_agg = xr.open_mfdataset('/home/chandra/data/Kruger/era5/evap_ERA5_monthly_averaged_reanalysis_resampled_monthly_mm_per_month_0.5degree.nc').e[:,::-1].sel(time = slice('2000','2005'))
+Evap_agg = xr.open_mfdataset('/home/chandra/data/Kruger/era5/evap_ERA5_monthly_averaged_reanalysis_resampled_monthly_mm_per_month_0.5degree.nc').e[:,::-1].sel(time = slice('2008','2017'))
 # Convert to multi-year mean
 Evap_agg = Evap_agg.groupby('time.month').mean(dim = 'time')
 Evap_agg = (Evap_agg.where(Evap_agg > 0))
