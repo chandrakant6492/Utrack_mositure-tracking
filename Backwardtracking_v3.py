@@ -57,7 +57,8 @@ def MR_footprint_backward(month, latitude, longitude):
     ET = (Evap_agg[month-1]).values
     fp=ET*fp
     backward_fp=fp/np.nansum(fp)
-    #print(np.nansum(backward_fp).round(2))
+    #Check (remove comment)
+    #print('This values should always be 1 ', 'np.nansum(backward_fp).round(2))
     backward_fp = backward_fp*ET
     return backward_fp
 
