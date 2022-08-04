@@ -59,7 +59,8 @@ def MR_footprint_forward(month, latitude, longitude):
     fp=e**fp
     fp[fp==1]=0
     forward_fp=fp/np.nansum(fp)
-    #print(np.nansum(forward_fp).round(2))
+    #Check (remove comment)
+    #print('This values should always be 1 ', np.nansum(forward_fp).round(2))
     forward_fp = forward_fp*((Evap_agg[month-1])[get_closest_index(lats,latitude), 
                                                  get_closest_index(lons,longitude)].values)
     return forward_fp
