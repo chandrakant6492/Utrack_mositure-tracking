@@ -38,6 +38,9 @@ Note: Longitude should be from 0 to 360 degrees
 Screened_data = pd.DataFrame({'Lat': [-18.5, -10.0],'Lon': [310,295]})
 
 
+"""
+3. Funtion for backwardtracking (monthly) [Annual estimates can be derived using 'np.sum' funtion] 
+"""
 ### Backward tracking
 def get_closest_index(lats,lat):
         import operator
